@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+        "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+        "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+
+<!--
+    Файл для исключений из проверки Checkstyle.
+    Используется для подавления предупреждений в специфических случаях.
+-->
+
+<suppressions>
+    <!-- Исключаем сгенерированные файлы -->
+    <suppress files=".*[\\/]target[\\/].*" checks=".*"/>
+    <suppress files=".*[\\/]generated[\\/].*" checks=".*"/>
+    
+    <!-- Исключаем тестовые файлы из некоторых проверок -->
+    <suppress files=".*Test\.java" checks="JavadocMethod"/>
+    <suppress files=".*Tests\.java" checks="JavadocMethod"/>
+</suppressions>
