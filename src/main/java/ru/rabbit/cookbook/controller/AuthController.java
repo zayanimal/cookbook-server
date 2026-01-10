@@ -48,13 +48,10 @@ public class AuthController {
      */
     @PostMapping("/logout")
     public ResponseEntity<SuccessResponse> logout() {
-        // TODO: Реализовать логику инвалидации токена
-        val response = SuccessResponse.builder()
+        return ResponseEntity.ok(SuccessResponse.builder()
             .success(true)
             .message("Выход выполнен успешно")
-            .build();
-
-        return ResponseEntity.ok(response);
+            .build());
     }
 
     /**

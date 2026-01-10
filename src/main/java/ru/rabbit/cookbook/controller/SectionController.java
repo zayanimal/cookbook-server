@@ -1,9 +1,9 @@
 package ru.rabbit.cookbook.controller;
 
-import java.util.List;
 import java.util.Map;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,13 +18,17 @@ import ru.rabbit.cookbook.dto.CreateSectionRequest;
 import ru.rabbit.cookbook.dto.Section;
 import ru.rabbit.cookbook.dto.SuccessResponse;
 import ru.rabbit.cookbook.dto.UpdateSectionRequest;
+import ru.rabbit.cookbook.service.SectionService;
 
 /**
  * Контроллер для управления разделами документации
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/sections")
 public class SectionController {
+
+    private final SectionService sectionService;
 
     /**
      * Получить все разделы
@@ -32,9 +36,8 @@ public class SectionController {
      */
     @GetMapping
     public ResponseEntity<Map<String, Object>> getAllSections() {
-        // TODO: Реализовать получение всех разделов из базы данных
         return ResponseEntity.ok(Map.of(
-            "data", List.of(),
+            "data", sectionService.getSections(),
             "success", true));
     }
 
@@ -45,15 +48,8 @@ public class SectionController {
      */
     @PostMapping
     public ResponseEntity<Map<String, Object>> createSection(final @Valid @RequestBody CreateSectionRequest request) {
-        // TODO: Реализовать создание раздела
-        // TODO: Проверить роль пользователя (должен быть admin)
-        val section = Section.builder()
-            .id("1")
-            .title(request.getTitle())
-            .build();
-
         return ResponseEntity.ok(Map.of(
-            "data", section,
+            "data", sectionService.createSection(request),
             "success", true));
     }
 
@@ -70,8 +66,8 @@ public class SectionController {
             .build();
 
         return ResponseEntity.ok(Map.of(
-            "data", section,
-            "success", true));
+        "data", section,
+        "success", true));
     }
 
     /**
@@ -84,14 +80,9 @@ public class SectionController {
         final @PathVariable String sectionId,
         final @Valid @RequestBody UpdateSectionRequest request
     ) {
-        val section = Section.builder()
-            .id(sectionId)
-            .title(request.getTitle())
-            .build();
-
         return ResponseEntity.ok(Map.of(
-            "data", section,
-            "success", true));
+        "data", sectionService.updateSection(sectionId, request),
+        "success", true));
     }
 
     /**
@@ -101,13 +92,10 @@ public class SectionController {
      */
     @DeleteMapping("/{sectionId}")
     public ResponseEntity<SuccessResponse> deleteSection(final @PathVariable String sectionId) {
-        // TODO: Реализовать удаление раздела и всех его страниц
-        // TODO: Проверить роль пользователя (должен быть admin)
-        val response = SuccessResponse.builder()
+        sectionService.deleteSection(sectionId);
+        return ResponseEntity.ok(SuccessResponse.builder()
             .success(true)
-            .message("Раздел успешно удален")
-            .build();
-
-        return ResponseEntity.ok(response);
+            .message(String.format("Раздел успешно удален id: %s", sectionId))
+            .build());
     }
 }
