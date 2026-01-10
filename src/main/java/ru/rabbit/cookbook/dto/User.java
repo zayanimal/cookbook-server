@@ -18,7 +18,7 @@ public class User {
 
     private String username;
 
-    private String role; // admin или client
+    private String role;
 
     private String name;
 }

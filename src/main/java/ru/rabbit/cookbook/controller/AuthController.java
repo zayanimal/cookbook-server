@@ -3,6 +3,7 @@ package ru.rabbit.cookbook.controller;
 import java.util.Map;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,32 +15,29 @@ import ru.rabbit.cookbook.dto.LoginRequest;
 import ru.rabbit.cookbook.dto.LoginResponse;
 import ru.rabbit.cookbook.dto.SuccessResponse;
 import ru.rabbit.cookbook.dto.User;
+import ru.rabbit.cookbook.service.AuthService;
 
 /**
  * Контроллер для операций аутентификации и авторизации
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/auth")
 public class AuthController {
+
+    private final AuthService authService;
 
     /**
      * Авторизация пользователя
      * POST /api/auth/login
      */
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
-        // TODO: Реализовать логику аутентификации
-        // Временная заглушка для примера
-        val response = LoginResponse.builder()
-            .token("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
-            .user(User.builder()
-                .id("1")
-                .username(request.getUsername())
-                .role("admin")
-                .name("Администратор")
-                .build())
-            .success(true)
-            .build();
+    public ResponseEntity<LoginResponse> login(final @Valid @RequestBody LoginRequest request) {
+        val user = authService.getUser(request.getUsername());
+        val response = new LoginResponse();
+        response.setSuccess(Boolean.TRUE);
+        response.setUser(user);
+        response.setToken("-");
 
         return ResponseEntity.ok(response);
     }
