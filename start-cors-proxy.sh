@@ -78,7 +78,7 @@ http {
 EOF
 
 # Проверяем, запущен ли уже контейнер
-CONTAINER_NAME="cookbook-nginx-proxy"
+CONTAINER_NAME="cookbook-cors-proxy"
 if [ "$(docker ps -q -f name=$CONTAINER_NAME)" ]; then
     echo "Контейнер $CONTAINER_NAME уже запущен. Останавливаем..."
     docker stop $CONTAINER_NAME

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,26 +19,29 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.rabbit.cookbook.dto.CreatePageRequest;
 import ru.rabbit.cookbook.dto.EditorJSContent;
 import ru.rabbit.cookbook.dto.Page;
+import ru.rabbit.cookbook.dto.PageUpdateParams;
 import ru.rabbit.cookbook.dto.SuccessResponse;
 import ru.rabbit.cookbook.dto.UpdatePageRequest;
+import ru.rabbit.cookbook.service.PageService;
 
 /**
- * Контроллер для управления страницами документации.
+ * Контроллер для управления страницами документации
  */
-@SuppressWarnings("checkstyle:JavadocStyle")
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/sections/{sectionId}/pages")
 public class PageController {
+
+    private final PageService pageService;
 
     /**
      * Получить все страницы раздела
      * GET /api/sections/{sectionId}/pages
      */
     @GetMapping
-    public ResponseEntity<Map<String, Object>> getPagesBySection(@PathVariable String sectionId) {
-        // TODO: Реализовать получение всех страниц раздела
+    public ResponseEntity<Map<String, Object>> getPagesBySection(final @PathVariable String sectionId) {
         return ResponseEntity.ok(Map.of(
-        "data", List.of(),
+        "data", pageService.getPages(sectionId),
         "success", true));
     }
 
@@ -51,21 +55,8 @@ public class PageController {
         final @PathVariable String sectionId,
         final @Valid @RequestBody CreatePageRequest request
     ) {
-        // TODO: Реализовать создание страницы
-        // TODO: Проверить роль пользователя (должен быть admin)
-        // TODO: Проверить существование раздела
-        val page = Page.builder()
-                .id(sectionId + "-1")
-                .title(request.getTitle())
-                .content(request.getContent() != null ? request.getContent() : EditorJSContent.builder()
-                        .blocks(List.of())
-                        .build())
-                .createdAt(OffsetDateTime.now())
-                .updatedAt(OffsetDateTime.now())
-                .build();
-
         return ResponseEntity.ok(Map.of(
-        "data", page,
+        "data", pageService.createPage(sectionId, request),
         "success", true));
     }
 
@@ -105,20 +96,12 @@ public class PageController {
         final @PathVariable String pageId,
         final @Valid @RequestBody UpdatePageRequest request
     ) {
-        // TODO: Реализовать обновление страницы
-        // TODO: Проверить роль пользователя (должен быть admin)
-        val page = Page.builder()
-            .id(pageId)
-            .title(request.getTitle() != null ? request.getTitle() : "Обновленная страница")
-            .content(request.getContent() != null ? request.getContent() : EditorJSContent.builder()
-                    .blocks(List.of())
-                    .build())
-            .createdAt(OffsetDateTime.now())
-            .updatedAt(OffsetDateTime.now())
-            .build();
-
         return ResponseEntity.ok(Map.of(
-        "data", page,
+        "data", pageService.updatePage(PageUpdateParams.builder()
+            .pageId(pageId)
+            .sectionId(sectionId)
+            .request(request)
+            .build()),
         "success", true));
     }
 
@@ -132,13 +115,11 @@ public class PageController {
         final @PathVariable String sectionId,
         final @PathVariable String pageId
     ) {
-        // TODO: Реализовать удаление страницы
-        // TODO: Проверить роль пользователя (должен быть admin)
-        val response = SuccessResponse.builder()
+        pageService.deletePage(sectionId, pageId);
+
+        return ResponseEntity.ok(SuccessResponse.builder()
             .success(true)
             .message("Страница успешно удалена")
-            .build();
-
-        return ResponseEntity.ok(response);
+            .build());
     }
 }
