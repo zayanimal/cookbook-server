@@ -19,6 +19,4 @@ public interface SectionMapper {
      * @return DTO раздела
      */
     Section toDto(SectionEntity sectionEntity);
-
-    List<Section> toSections(List<SectionEntity> sectionEntities);
 }

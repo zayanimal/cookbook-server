@@ -1,7 +1,5 @@
 package ru.rabbit.cookbook.dto;
 
-import java.time.OffsetDateTime;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,8 +19,4 @@ public class Page {
     private String title;
 
     private EditorJSContent content;
-
-    private OffsetDateTime createdAt;
-
-    private OffsetDateTime updatedAt;
 }

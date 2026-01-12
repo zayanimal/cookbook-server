@@ -13,6 +13,7 @@ import ru.rabbit.cookbook.dto.Page;
 import ru.rabbit.cookbook.dto.PageUpdateParams;
 import ru.rabbit.cookbook.entity.PageEntity;
 import ru.rabbit.cookbook.mapper.PageMapper;
+import ru.rabbit.cookbook.repository.PageRepository;
 import ru.rabbit.cookbook.repository.SectionRepository;
 import ru.rabbit.cookbook.service.PageService;
 
@@ -22,62 +23,53 @@ public class PageServiceImpl implements PageService {
 
     private final PageMapper pageMapper;
 
+    private final PageRepository pageRepository;
+
     private final SectionRepository sectionRepository;
 
     @Override
     public List<Page> getPages(final String sectionId) {
-        val pages = sectionRepository.findById(sectionId).orElseThrow();
-        return pageMapper.toPages(pages.getPages());
+        val pages = pageRepository.findBySectionId(sectionId);
+        return pageMapper.toPages(pages);
     }
 
     @Override
     public Page createPage(final String sectionId, final CreatePageRequest request) {
-        val section = sectionRepository.findById(sectionId).orElseThrow();
+        sectionRepository.findById(sectionId).orElseThrow();
 
         val page = new PageEntity();
-        page.setId(String.valueOf(section.getPages().size() + 1));
+        page.setSectionId(sectionId);
         page.setTitle(request.getTitle());
         page.setContent(getContent(request.getContent()));
 
-        section.getPages().add(page);
-
-        sectionRepository.save(section);
-
-        return pageMapper.toDto(page);
+        val savedPage = pageRepository.save(page);
+        return pageMapper.toDto(savedPage);
     }
 
     @Override
     public Page updatePage(final PageUpdateParams params) {
-        val section = sectionRepository.findById(params.getSectionId()).orElseThrow();
-        val page = section.getPages().stream()
-            .filter(p -> p.getId().equals(params.getPageId()))
-            .findFirst()
-            .orElseThrow();
+        val page = pageRepository.findById(params.getPageId())
+            .orElseThrow(() -> new RuntimeException("Page not found"));
 
         val request = params.getRequest();
         val title = request.getTitle();
         val content = request.getContent();
 
         if (nonNull(title)) {
-            page.setTitle(request.getTitle());
+            page.setTitle(title);
         }
 
         if (nonNull(content)) {
             page.setContent(getContent(content));
         }
 
-        sectionRepository.save(section);
-
-        return pageMapper.toDto(page);
+        val updatedPage = pageRepository.save(page);
+        return pageMapper.toDto(updatedPage);
     }
 
+    @Override
     public void deletePage(final String sectionId, final String pageId) {
-        val section = sectionRepository.findById(sectionId).orElseThrow();
-        section.setPages(section.getPages().stream()
-            .filter(p -> !p.getId().equals(pageId))
-            .toList());
-
-        sectionRepository.save(section);
+        pageRepository.deleteById(pageId);
     }
 
     private EditorJSContent getContent(final EditorJSContent content) {

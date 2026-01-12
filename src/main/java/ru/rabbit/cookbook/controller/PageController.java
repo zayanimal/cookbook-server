@@ -1,6 +1,5 @@
 package ru.rabbit.cookbook.controller;
 
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -76,8 +75,6 @@ public class PageController {
             .content(EditorJSContent.builder()
                 .blocks(List.of())
                 .build())
-            .createdAt(OffsetDateTime.now())
-            .updatedAt(OffsetDateTime.now())
             .build();
 
         return ResponseEntity.ok(Map.of(
