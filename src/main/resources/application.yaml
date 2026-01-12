@@ -3,3 +3,7 @@ spring:
     name: cookbook
   mongodb:
     uri: mongodb://localhost:27017/cookbook
+
+jwt:
+  secret: mySecretKeyForJWTTokenGenerationThatShouldBeAtLeast256BitsLongForProductionUse
+  expiration: 86400000 # 24 часа в миллисекундах

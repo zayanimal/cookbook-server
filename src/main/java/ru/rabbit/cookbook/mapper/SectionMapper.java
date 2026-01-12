@@ -1,7 +1,5 @@
 package ru.rabbit.cookbook.mapper;
 
-import java.util.List;
-
 import org.mapstruct.Mapper;
 import ru.rabbit.cookbook.dto.Section;
 import ru.rabbit.cookbook.entity.SectionEntity;
