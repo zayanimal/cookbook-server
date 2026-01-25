@@ -2,8 +2,10 @@ spring:
   application:
     name: cookbook
   mongodb:
-    uri: mongodb://localhost:27017/cookbook
+    username: ${MONGODB_USERNAME}
+    password: ${MONGODB_PASSWORD}
+    uri: mongodb://localhost:27017/${MONGODB_DB_NAME}
 
 jwt:
-  secret: mySecretKeyForJWTTokenGenerationThatShouldBeAtLeast256BitsLongForProductionUse
+  secret: ${JWT_SECRET}
   expiration: 86400000 # 24 часа в миллисекундах
