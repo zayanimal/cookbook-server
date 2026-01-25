@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  cookbook-mongodb:
+    image: mongo:latest
+    container_name: cookbook-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+    volumes:
+      - ${MONGODB_DATA_PATH}:/bitnami/mongodb
+    networks:
+      - cookbook-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')", "--quiet"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 40s
+
+  cookbook-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cookbook-server
+    ports:
+      - "8080:8080"
+    environment:
+      MONGODB_HOST: cookbook-mongodb
+      MONGODB_PORT: 27017
+      MONGODB_USERNAME: ${MONGODB_USERNAME}
+      MONGODB_PASSWORD: ${MONGODB_PASSWORD}
+      MONGODB_DB_NAME: ${MONGODB_DB_NAME}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      cookbook-mongodb:
+        condition: service_healthy
+    networks:
+      - cookbook-network
+    restart: unless-stopped
+
+  cors-proxy:
+    image: nginx:alpine
+    container_name: cookbook-cors-proxy
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - cookbook-server
+    networks:
+      - cookbook-network
+    restart: unless-stopped
+
+networks:
+  cookbook-network:
+    driver: bridge

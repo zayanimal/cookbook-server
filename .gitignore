@@ -3,4 +3,5 @@
 .log
 target
 data
+backup
 nginx-config

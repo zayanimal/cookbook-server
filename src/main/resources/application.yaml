@@ -2,10 +2,12 @@ spring:
   application:
     name: cookbook
   mongodb:
+    host: ${MONGODB_HOST}
+    port: ${MONGODB_PORT}
     username: ${MONGODB_USERNAME}
     password: ${MONGODB_PASSWORD}
-    uri: mongodb://localhost:27017/${MONGODB_DB_NAME}
-
+    database: ${MONGODB_DB_NAME}
+    authentication-database: admin
 jwt:
   secret: ${JWT_SECRET}
   expiration: 86400000 # 24 часа в миллисекундах
