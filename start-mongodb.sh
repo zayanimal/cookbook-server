@@ -17,11 +17,9 @@ docker rm cookbook-mongodb 2>/dev/null || true
 docker run -d \
   --name cookbook-mongodb \
   -p 27017:27017 \
-  -e MONGODB_ROOT_USER=admin \
-  -e MONGODB_ROOT_PASSWORD=admin123 \
-  -e MONGODB_DATABASE=cookbook \
-  -e MONGODB_USERNAME=admin \
-  -e MONGODB_PASSWORD=admin123 \
-  -v "$DATA_DIR:/bitnami/mongodb" \
+  -e MONGO_INITDB_DATABASE=cookbook \
+  -e MONGO_INITDB_ROOT_USERNAME=admin \
+  -e MONGO_INITDB_ROOT_PASSWORD=admin123 \
+  -v "$DATA_DIR:/data/db" \
   --rm \
-  bitnami/mongodb:latest
+  mongo:latest

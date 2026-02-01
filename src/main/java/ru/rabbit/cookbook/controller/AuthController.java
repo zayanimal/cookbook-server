@@ -7,6 +7,7 @@ import java.util.Map;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.springframework.data.mongodb.UncategorizedMongoDbException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -43,6 +44,12 @@ public class AuthController {
             return ResponseEntity.status(401)
                 .body(ErrorResponse.builder()
                     .error("Неверное имя пользователя или пароль")
+                    .success(false)
+                    .build());
+        } catch (final UncategorizedMongoDbException e) {
+            return ResponseEntity.status(400)
+                .body(ErrorResponse.builder()
+                    .error(e.getMessage())
                     .success(false)
                     .build());
         }

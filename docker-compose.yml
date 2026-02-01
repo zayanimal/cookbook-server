@@ -10,7 +10,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
     volumes:
-      - ${MONGODB_DATA_PATH}:/bitnami/mongodb
+      - ${MONGODB_DATA_PATH}:/data/db
     networks:
       - cookbook-network
     healthcheck:
