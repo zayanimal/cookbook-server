@@ -7,18 +7,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * DTO для представления раздела документации
- */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Section {
+public class Subsection {
 
     private String id;
 
     private String title;
 
-    private List<Subsection> subsections = List.of();
+    private List<Page> pages = List.of();
 }

@@ -8,11 +8,11 @@ import ru.rabbit.cookbook.dto.PageUpdateParams;
 
 public interface PageService {
 
-    List<Page> getPages(String sectionId);
+    List<Page> getPages(String subsectionId);
 
-    Page createPage(String sectionId, CreatePageRequest request);
+    Page createPage(String subsectionId, CreatePageRequest request);
 
     Page updatePage(PageUpdateParams params);
 
-    void deletePage(String sectionId, String pageId);
+    void deletePage(String pageId);
 }

@@ -7,9 +7,7 @@ import ru.rabbit.cookbook.entity.PageEntity;
 
 public interface PageRepository extends MongoRepository<PageEntity, String> {
 
-    List<PageEntity> findBySectionId(String sectionId);
+    List<PageEntity> findBySubsectionId(String subsectionId);
 
-    List<PageEntity> findBySectionIdIn(List<String> sectionIds);
-
-    void deleteBySectionId(String sectionId);
+    void deleteBySubsectionId(String subsectionId);
 }

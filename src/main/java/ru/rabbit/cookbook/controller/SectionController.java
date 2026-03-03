@@ -63,6 +63,7 @@ public class SectionController {
         val section = Section.builder()
             .id(sectionId)
             .title("Пример раздела")
+            .subsections(java.util.List.of())
             .build();
 
         return ResponseEntity.ok(Map.of(

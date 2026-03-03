@@ -9,7 +9,5 @@ public class PageUpdateParams {
 
     private String pageId;
 
-    private String sectionId;
-
     private UpdatePageRequest request;
 }

@@ -12,9 +12,13 @@ public class PageEntity {
     @Id
     private String id;
 
-    private String sectionId;
+    private String subsectionId;
 
     private String title;
 
     private EditorJSContent content;
+
+    private String createdAt;
+
+    private String updatedAt;
 }

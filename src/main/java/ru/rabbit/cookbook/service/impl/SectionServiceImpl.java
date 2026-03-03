@@ -12,8 +12,10 @@ import ru.rabbit.cookbook.dto.UpdateSectionRequest;
 import ru.rabbit.cookbook.entity.SectionEntity;
 import ru.rabbit.cookbook.mapper.PageMapper;
 import ru.rabbit.cookbook.mapper.SectionMapper;
+import ru.rabbit.cookbook.mapper.SubsectionMapper;
 import ru.rabbit.cookbook.repository.PageRepository;
 import ru.rabbit.cookbook.repository.SectionRepository;
+import ru.rabbit.cookbook.repository.SubsectionRepository;
 import ru.rabbit.cookbook.service.SectionService;
 
 @Service
@@ -22,11 +24,15 @@ public class SectionServiceImpl implements SectionService {
 
     private final SectionMapper sectionMapper;
 
+    private final SubsectionMapper subsectionMapper;
+
     private final PageMapper pageMapper;
 
-    private final PageRepository pageRepository;
-
     private final SectionRepository sectionRepository;
+
+    private final SubsectionRepository subsectionRepository;
+
+    private final PageRepository pageRepository;
 
     @Override
     public List<Section> getSections() {
@@ -34,8 +40,15 @@ public class SectionServiceImpl implements SectionService {
         return sections.stream()
             .map(sectionEntity -> {
                 val section = sectionMapper.toDto(sectionEntity);
-                val pages = pageRepository.findBySectionId(sectionEntity.getId());
-                section.setPages(pageMapper.toPages(pages));
+                val subsectionEntities = subsectionRepository.findBySectionId(sectionEntity.getId());
+                val subsections = subsectionEntities.stream()
+                    .map(subsectionEntity -> {
+                        val subsection = subsectionMapper.toDto(subsectionEntity);
+                        subsection.setPages(pageMapper.toPages(pageRepository.findBySubsectionId(subsectionEntity.getId())));
+                        return subsection;
+                    })
+                    .collect(Collectors.toList());
+                section.setSubsections(subsections);
                 return section;
             })
             .collect(Collectors.toList());
@@ -47,7 +60,7 @@ public class SectionServiceImpl implements SectionService {
         section.setTitle(request.getTitle());
 
         val sectionDto = sectionMapper.toDto(sectionRepository.save(section));
-        sectionDto.setPages(List.of());
+        sectionDto.setSubsections(List.of());
 
         return sectionDto;
     }
@@ -62,7 +75,9 @@ public class SectionServiceImpl implements SectionService {
     @Override
     public void deleteSection(final String id) {
         sectionRepository.findById(id).orElseThrow();
-        pageRepository.deleteBySectionId(id);
+        val subsections = subsectionRepository.findBySectionId(id);
+        subsections.forEach(subsection -> pageRepository.deleteBySubsectionId(subsection.getId()));
+        subsectionRepository.deleteBySectionId(id);
         sectionRepository.deleteById(id);
     }
 }
