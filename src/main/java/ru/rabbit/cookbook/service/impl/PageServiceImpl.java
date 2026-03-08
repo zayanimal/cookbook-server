@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.springframework.stereotype.Service;
 import ru.rabbit.cookbook.dto.CreatePageRequest;
-import ru.rabbit.cookbook.dto.EditorJSContent;
 import ru.rabbit.cookbook.dto.Page;
 import ru.rabbit.cookbook.dto.PageUpdateParams;
 import ru.rabbit.cookbook.entity.PageEntity;
@@ -17,6 +16,7 @@ import ru.rabbit.cookbook.mapper.PageMapper;
 import ru.rabbit.cookbook.repository.PageRepository;
 import ru.rabbit.cookbook.repository.SubsectionRepository;
 import ru.rabbit.cookbook.service.PageService;
+import ru.rabbit.cookbook.util.MarkdownSanitizer;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +27,8 @@ public class PageServiceImpl implements PageService {
     private final PageRepository pageRepository;
 
     private final SubsectionRepository subsectionRepository;
+
+    private final MarkdownSanitizer markdownSanitizer;
 
     @Override
     public List<Page> getPages(final String subsectionId) {
@@ -42,7 +44,7 @@ public class PageServiceImpl implements PageService {
         val page = new PageEntity();
         page.setSubsectionId(subsectionId);
         page.setTitle(request.getTitle());
-        page.setContent(getContent(request.getContent()));
+        page.setContent(markdownSanitizer.sanitize(request.getContent()));
         page.setCreatedAt(now);
         page.setUpdatedAt(now);
 
@@ -64,7 +66,7 @@ public class PageServiceImpl implements PageService {
         }
 
         if (nonNull(content)) {
-            page.setContent(getContent(content));
+            page.setContent(markdownSanitizer.sanitize(content));
         }
 
         page.setUpdatedAt(Instant.now().toString());
@@ -76,13 +78,5 @@ public class PageServiceImpl implements PageService {
     @Override
     public void deletePage(final String pageId) {
         pageRepository.deleteById(pageId);
-    }
-
-    private EditorJSContent getContent(final EditorJSContent content) {
-        return nonNull(content)
-            ? content
-            : EditorJSContent.builder()
-                .blocks(List.of())
-                .build();
     }
 }

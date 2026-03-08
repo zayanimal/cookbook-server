@@ -10,6 +10,8 @@ public interface SectionService {
 
     List<Section> getSections();
 
+    Section getSectionById(String id);
+
     Section createSection(CreateSectionRequest request);
 
     Section updateSection(String id, UpdateSectionRequest request);

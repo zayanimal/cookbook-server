@@ -16,5 +16,5 @@ public class UpdatePageRequest {
     @Size(min = 1, message = "Название страницы должно содержать хотя бы один символ")
     private String title;
 
-    private EditorJSContent content;
+    private String content;
 }

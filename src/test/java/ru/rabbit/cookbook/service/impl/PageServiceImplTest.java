@@ -10,14 +10,15 @@ import java.util.List;
 import java.util.Optional;
 
 import lombok.val;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.mockito.Mockito;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.rabbit.cookbook.dto.CreatePageRequest;
-import ru.rabbit.cookbook.dto.EditorJSContent;
 import ru.rabbit.cookbook.dto.Page;
 import ru.rabbit.cookbook.dto.PageUpdateParams;
 import ru.rabbit.cookbook.dto.UpdatePageRequest;
@@ -26,6 +27,7 @@ import ru.rabbit.cookbook.entity.SubsectionEntity;
 import ru.rabbit.cookbook.mapper.PageMapper;
 import ru.rabbit.cookbook.repository.PageRepository;
 import ru.rabbit.cookbook.repository.SubsectionRepository;
+import ru.rabbit.cookbook.util.MarkdownSanitizer;
 
 @ExtendWith(MockitoExtension.class)
 class PageServiceImplTest {
@@ -39,8 +41,16 @@ class PageServiceImplTest {
     @Mock
     private SubsectionRepository subsectionRepository;
 
+    @Mock
+    private MarkdownSanitizer markdownSanitizer;
+
     @InjectMocks
     private PageServiceImpl pageService;
+
+    @BeforeEach
+    void setupSanitizer() {
+        Mockito.lenient().when(markdownSanitizer.sanitize(any())).thenAnswer(inv -> inv.getArgument(0));
+    }
 
     @Test
     @DisplayName("Получение страниц — возвращает маппированные страницы")
@@ -72,17 +82,18 @@ class PageServiceImplTest {
     }
 
     @Test
-    @DisplayName("Создание страницы — устанавливает пустые блоки если контент не передан")
-    void createPage_withNullContent_setsEmptyBlocks() {
+    @DisplayName("Создание страницы — устанавливает пустую строку если контент не передан")
+    void createPage_withNullContent_setsEmptyString() {
         val request = new CreatePageRequest("New Page", null);
         val savedEntity = new PageEntity();
         savedEntity.setId("p1");
         savedEntity.setTitle("New Page");
-        savedEntity.setContent(EditorJSContent.builder().blocks(List.of()).build());
+        savedEntity.setContent("");
 
         val expected = new Page();
         expected.setId("p1");
         expected.setTitle("New Page");
+        expected.setContent("");
 
         when(subsectionRepository.findById("sub1")).thenReturn(Optional.of(new SubsectionEntity()));
         when(pageRepository.save(any(PageEntity.class))).thenReturn(savedEntity);
@@ -95,9 +106,9 @@ class PageServiceImplTest {
     }
 
     @Test
-    @DisplayName("Создание страницы — сохраняет переданный контент")
+    @DisplayName("Создание страницы — сохраняет переданный Markdown контент")
     void createPage_withContent_preservesContent() {
-        val content = EditorJSContent.builder().blocks(List.of()).build();
+        val content = "## Заголовок\n\nТекст страницы";
         val request = new CreatePageRequest("New Page", content);
         val savedEntity = new PageEntity();
         savedEntity.setId("p1");
@@ -164,7 +175,7 @@ class PageServiceImplTest {
         entity.setId("p1");
         entity.setTitle("Old Title");
 
-        val content = EditorJSContent.builder().blocks(List.of()).build();
+        val content = "## Заголовок\n\nОбновлённый текст";
         val request = new UpdatePageRequest("New Title", content);
         val params = PageUpdateParams.builder().pageId("p1").request(request).build();
 

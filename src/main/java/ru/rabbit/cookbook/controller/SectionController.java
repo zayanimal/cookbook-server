@@ -4,7 +4,6 @@ import java.util.Map;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.rabbit.cookbook.dto.CreateSectionRequest;
-import ru.rabbit.cookbook.dto.Section;
 import ru.rabbit.cookbook.dto.SuccessResponse;
 import ru.rabbit.cookbook.dto.UpdateSectionRequest;
 import ru.rabbit.cookbook.service.SectionService;
@@ -59,16 +57,9 @@ public class SectionController {
      */
     @GetMapping("/{sectionId}")
     public ResponseEntity<Map<String, Object>> getSectionById(final @PathVariable String sectionId) {
-        // TODO: Реализовать получение раздела по ID
-        val section = Section.builder()
-            .id(sectionId)
-            .title("Пример раздела")
-            .subsections(java.util.List.of())
-            .build();
-
         return ResponseEntity.ok(Map.of(
-        "data", section,
-        "success", true));
+            "data", sectionService.getSectionById(sectionId),
+            "success", true));
     }
 
     /**

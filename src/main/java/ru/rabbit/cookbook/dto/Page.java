@@ -18,7 +18,7 @@ public class Page {
 
     private String title;
 
-    private EditorJSContent content;
+    private String content;
 
     private String createdAt;
 

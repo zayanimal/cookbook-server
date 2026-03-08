@@ -55,6 +55,22 @@ public class SectionServiceImpl implements SectionService {
     }
 
     @Override
+    public Section getSectionById(final String id) {
+        val sectionEntity = sectionRepository.findById(id).orElseThrow(() -> new RuntimeException("Section not found"));
+        val section = sectionMapper.toDto(sectionEntity);
+        val subsectionEntities = subsectionRepository.findBySectionId(id);
+        val subsections = subsectionEntities.stream()
+            .map(subsectionEntity -> {
+                val subsection = subsectionMapper.toDto(subsectionEntity);
+                subsection.setPages(pageMapper.toPages(pageRepository.findBySubsectionId(subsectionEntity.getId())));
+                return subsection;
+            })
+            .collect(Collectors.toList());
+        section.setSubsections(subsections);
+        return section;
+    }
+
+    @Override
     public Section createSection(final CreateSectionRequest request) {
         val section = new SectionEntity();
         section.setTitle(request.getTitle());
